@@ -5,21 +5,14 @@ build:
     build:
       - pip3 install --upgrade pip
       - pip3 install -r requirements.txt
+      - pip3 list  # Debug: show what's installed
 run:
   runtime-version: 3.11
   pre-run:
-    - pip3 install uvicorn
-    - pip3 install fastapi
-  command: python3 -c "print('Starting KYC API...'); import api_server; print('Import successful')" && uvicorn api_server:app --host 0.0.0.0 --port $PORT --log-level debug
+    - pip3 install --upgrade pip
+    - pip3 install -r requirements.txt
+    - pip3 list  # Debug: show what's available at runtime
+  command: uvicorn api_server:app --host 0.0.0.0 --port 8000
   network:
     port: 8000
     env: PORT
-  env:
-    - name: AWS_REGION
-      value: us-east-1
-    - name: PYTHONPATH
-      value: /app/src
-    - name: PYTHONUNBUFFERED
-      value: "1"
-    - name: LOG_LEVEL
-      value: "DEBUG"

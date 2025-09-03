@@ -10,7 +10,7 @@ run:
   pre-run:
     - pip3 install uvicorn
     - pip3 install fastapi
-  command: uvicorn api_server:app --host 0.0.0.0 --port $PORT
+  command: python3 -c "print('Starting KYC API...'); import api_server; print('Import successful')" && uvicorn api_server:app --host 0.0.0.0 --port $PORT --log-level debug
   network:
     port: 8000
     env: PORT
@@ -19,5 +19,7 @@ run:
       value: us-east-1
     - name: PYTHONPATH
       value: /app/src
-    - name: PORT
-      value: "8000"
+    - name: PYTHONUNBUFFERED
+      value: "1"
+    - name: LOG_LEVEL
+      value: "DEBUG"

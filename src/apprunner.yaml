@@ -1,10 +1,11 @@
 version: 1.0
-runtime: python311
+runtime: python3
 build:
   commands:
     build:
-      - echo "Building with Dockerfile..."
-      - docker build -t kyc-app .
+      - echo "Installing Python dependencies..."
+      - pip install --upgrade pip
+      - pip install -r requirements.txt
       - echo "Build complete"
 run:
   runtime-version: python311

@@ -10,7 +10,7 @@ run:
   pre-run:
     - pip3 install uvicorn
     - pip3 install fastapi
-  command: uvicorn api_server:app --host 0.0.0.0 --port 8000
+  command: uvicorn api_server:app --host 0.0.0.0 --port $PORT
   network:
     port: 8000
     env: PORT
@@ -19,3 +19,5 @@ run:
       value: us-east-1
     - name: PYTHONPATH
       value: /app/src
+    - name: PORT
+      value: "8080"

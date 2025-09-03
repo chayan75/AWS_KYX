@@ -1034,10 +1034,12 @@ async def validate_document(document_id: str, validation_request: AdminDocumentV
         raise HTTPException(status_code=500, detail=str(e))
 
 if __name__ == "__main__":
+    import os
+    port = int(os.getenv("PORT", 8000))
     uvicorn.run(
         "api_server:app",
         host="0.0.0.0",
-        port=8000,
+        port=port,
         reload=True,
         log_level="info"
     ) 

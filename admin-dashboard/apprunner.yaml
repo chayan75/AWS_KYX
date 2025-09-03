@@ -5,10 +5,11 @@ build:
     build:
       - npm install
       - npm run build
-      - npm install -g serve
 run:
-  runtime-version: 18
-  command: cd admin-dashboard && serve -s build -l 3000
+  runtime-version: 18.20.8
+  pre-run:
+    - npm install -g serve
+  command: serve -s build -l 3000
   network:
     port: 3000
     env: PORT

@@ -10,7 +10,12 @@ run:
   pre-run:
     - pip3 install uvicorn
     - pip3 install fastapi
-  command: uvicorn api_server:app --host 0.0.0.0 --port 8000
+  command: python -c "import sys; print('Python path:', sys.path); import api_server; print('Import successful')" && uvicorn api_server:app --host 0.0.0.0 --port 8000
   network:
     port: 8000
     env: PORT
+  env:
+    - name: AWS_REGION
+      value: us-east-1
+    - name: PYTHONPATH
+      value: /app/src

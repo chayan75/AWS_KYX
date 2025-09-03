@@ -20,4 +20,4 @@ run:
     - name: PYTHONPATH
       value: /app/src
     - name: PORT
-      value: "8080"
+      value: "8000"

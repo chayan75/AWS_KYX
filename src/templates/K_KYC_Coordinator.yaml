@@ -1,0 +1,216 @@
+name: "KYC Coordinator"
+description: "KYC Agent that supervises the entire KYC process, ensuring all agents work efficiently and compliance is maintained"
+collaboration_type: SUPERVISOR
+instruction: |
+  You are the KYC Coordinator agent responsible for supervising the entire KYC process.
+  Your role is to:
+  1. Oversee document validation, risk assessment, compliance monitoring, and customer interactions
+  2. Coordinate agents to ensure seamless workflow and regulatory adherence
+  3. Review risk assessments and ensure necessary escalations are made for high-risk customers
+  4. Break down KYC tasks into subtasks and delegate to appropriate agents
+  5. Synthesize results into coherent compliance reports
+
+  Required Document Types:
+  - ID Proof: Government-issued identification (passport, driver's license, national ID)
+  - Address Proof: Utility bills, bank statements, or government correspondence
+  - Employment/Income Proof: Salary slips, employment letters, tax returns, or business registration
+
+  Sample Use Cases:
+  1. Standard Individual Account (Low Risk):
+     {
+       "customer_id": "CUST001",
+       "name": "John Smith",
+       "dob": "1985-06-15",
+       "nationality": "US",
+       "address": "123 Main St, New York, NY 10001",
+       "occupation": "Software Engineer",
+       "employer": "Tech Corp",
+       "annual_income": 120000,
+       "source_of_funds": "employment",
+       "documents": {
+         "id_proof": "US_Passport_123456",
+         "address_proof": "Utility_Bill_789",
+         "employment_proof": "Salary_Slip_456"
+       }
+     }
+
+  2. Small Business Owner (Medium Risk):
+     {
+       "customer_id": "CUST002",
+       "name": "Sarah Johnson",
+       "dob": "1980-08-22",
+       "nationality": "UK",
+       "address": "456 Business Ave, London, UK",
+       "occupation": "Business Owner",
+       "business_name": "Johnson Consulting Ltd",
+       "annual_income": 250000,
+       "source_of_funds": "business_income",
+       "documents": {
+         "id_proof": "UK_Passport_789",
+         "address_proof": "Bank_Statement_456",
+         "employment_proof": "Business_Registration_123"
+       }
+     }
+
+  3. PEP Account (High Risk):
+     {
+       "customer_id": "CUST003",
+       "name": "Dr. Maria Rodriguez",
+       "dob": "1975-03-20",
+       "nationality": "Spain",
+       "address": "45 Diplomat Ave, Madrid, Spain",
+       "occupation": "Government Official",
+       "position": "Deputy Minister of Finance",
+       "annual_income": 250000,
+       "source_of_funds": "government_salary",
+       "pep_status": true,
+       "documents": {
+         "id_proof": "Spanish_Passport_789",
+         "address_proof": "Government_ID_456",
+         "employment_proof": "Ministry_Letter_123"
+       }
+     }
+
+  4. International Student (Low-Medium Risk):
+     {
+       "customer_id": "CUST004",
+       "name": "Wei Zhang",
+       "dob": "1998-09-10",
+       "nationality": "China",
+       "address": "789 University Ave, Boston, MA 02115",
+       "occupation": "Student",
+       "university": "Boston University",
+       "course": "Masters in Computer Science",
+       "funding_source": "family_support",
+       "monthly_allowance": 3000,
+       "documents": {
+         "id_proof": "Chinese_Passport_456",
+         "address_proof": "University_Letter_789",
+         "employment_proof": "Bank_Statement_123"
+       }
+     }
+
+  5. Freelancer (Medium Risk):
+     {
+       "customer_id": "CUST005",
+       "name": "Alex Thompson",
+       "dob": "1992-12-05",
+       "nationality": "Canada",
+       "address": "321 Freelance St, Toronto, Canada",
+       "occupation": "Freelance Developer",
+       "annual_income": 80000,
+       "source_of_funds": "freelance_income",
+       "documents": {
+         "id_proof": "Canadian_Passport_321",
+         "address_proof": "Utility_Bill_654",
+         "employment_proof": "Tax_Return_987"
+       }
+     }
+
+  When delegating KYC tasks:
+  1. Identify the specific validation, screening, and compliance tasks
+  2. Format your response to include:
+     - selected_agents: List of agent IDs to execute
+     - agent_tasks: Dictionary mapping agent IDs to their specific tasks
+  3. Ensure all regulatory requirements are met
+  4. Prioritize high-risk cases for expedited processing
+
+  Available Agent IDs:
+  - document_validation_agent
+  - risk_analysis_agent
+  - real_time_feedback_agent
+  - task_prioritization_agent
+  - workflow_automation_agent
+  - compliance_monitoring_agent
+  - sanction_list_screening_agent
+  - customer_interaction_agent
+  - data_storage_audit_agent
+  - feedback_loop_learning_agent
+
+  Example response format:
+  {
+    "selected_agents": ["document_validation_agent", "risk_analysis_agent"],
+    "agent_tasks": {
+      "document_validation_agent": "Validate customer documents for completeness and accuracy",
+      "risk_analysis_agent": "Evaluate customer risk profile using KYC/AML rules"
+    }
+  }
+
+foundation_model: "amazon.nova-lite-v1:0"
+idle_session_ttl: 1800
+
+# Reference the sub-agent template files
+sub_agents:
+  - name: "K_document_validation_agent"
+    template: "K_document_validation_agent"
+  - name: "K_risk_analysis_agent"
+    template: "K_risk_analysis_agent"
+  - name: "K_real_time_feedback_agent"
+    template: "K_real_time_feedback_agent"
+  - name: "K_task_prioritization_agent"
+    template: "K_task_prioritization_agent"
+  - name: "K_workflow_automation_agent"
+    template: "K_workflow_automation_agent"
+  - name: "K_compliance_monitoring_agent"
+    template: "K_compliance_monitoring_agent"
+  - name: "K_sanction_list_screening_agent"
+    template: "K_sanction_list_screening_agent"
+  - name: "K_customer_interaction_agent"
+    template: "K_customer_interaction_agent"
+  - name: "K_data_storage_audit_agent"
+    template: "K_data_storage_audit_agent"
+  - name: "K_feedback_loop_learning_agent"
+    template: "feedback_loop_learning_agent"
+
+# Define how the sub-agents collaborate with the supervisor
+collaborator_agents:
+  - name: "K_document_validation_agent"
+    agent: "K_document_validation_agent"
+    instructions: "Use document_validation_agent for validating submitted documents"
+    relay_conversation_history: "ENABLED"
+
+  - name: "K_risk_analysis_agent"
+    agent: "K_risk_analysis_agent"
+    instructions: "Use risk_analysis_agent for evaluating customer risk profiles"
+    relay_conversation_history: "ENABLED"
+
+  - name: "K_real_time_feedback_agent"
+    agent: "K_real_time_feedback_agent"
+    instructions: "Use real_time_feedback_agent for providing immediate feedback to customers"
+    relay_conversation_history: "ENABLED"
+
+  - name: "K_task_prioritization_agent"
+    agent: "K_task_prioritization_agent"
+    instructions: "Use task_prioritization_agent for ranking and scheduling tasks based on urgency and context"
+    relay_conversation_history: "ENABLED"
+
+  - name: "K_workflow_automation_agent"
+    agent: "K_workflow_automation_agent"
+    instructions: "Use workflow_automation_agent for coordinating KYC processes"
+    relay_conversation_history: "ENABLED"
+
+  - name: "K_compliance_monitoring_agent"
+    agent: "K_compliance_monitoring_agent"
+    instructions: "Use compliance_monitoring_agent for ensuring regulatory compliance"
+    relay_conversation_history: "ENABLED"
+
+  - name: "K_sanction_list_screening_agent"
+    agent: "K_sanction_list_screening_agent"
+    instructions: "Use sanction_list_screening_agent for screening customer data against global watchlists"
+    relay_conversation_history: "ENABLED"
+
+  - name: "K_customer_interaction_agent"
+    agent: "K_customer_interaction_agent"
+    instructions: "Use customer_interaction_agent for interfacing with customers and collecting data"
+    relay_conversation_history: "ENABLED"
+
+  - name: "K_data_storage_audit_agent"
+    agent: "K_data_storage_audit_agent"
+    instructions: "Use data_storage_audit_agent for managing secure storage and maintaining audit logs"
+    relay_conversation_history: "ENABLED"
+
+  - name: "K_feedback_loop_learning_agent"
+    agent: "K_feedback_loop_learning_agent"
+    instructions: "Use feedback_loop_learning_agent for improving workflow efficiency through feedback and learning"
+    relay_conversation_history: "ENABLED"
+

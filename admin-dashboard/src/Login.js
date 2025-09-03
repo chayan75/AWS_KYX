@@ -13,7 +13,7 @@ import {
 } from '@mui/material';
 import { LockOutlined } from '@mui/icons-material';
 
-const API_BASE_URL = 'http://localhost:8000/api';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000/api';
 
 function Login({ onLogin }) {
   const [credentials, setCredentials] = useState({

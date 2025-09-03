@@ -30,6 +30,9 @@ import ErrorIcon from '@mui/icons-material/Error';
 import WarningIcon from '@mui/icons-material/Warning';
 import InfoIcon from '@mui/icons-material/Info';
 
+// API configuration
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000/api';
+
 function App() {
   const [activeStep, setActiveStep] = useState(0);
   const [customerData, setCustomerData] = useState({
@@ -78,7 +81,7 @@ function App() {
         formData.append('document_type', apiDocumentType);
         formData.append('file', file);
 
-        const response = await fetch('http://localhost:8000/api/customer/upload-document', {
+        const response = await fetch(`${API_BASE_URL}/customer/upload-document`, {
           method: 'POST',
           body: formData,
         });
@@ -129,7 +132,7 @@ function App() {
         document_type: documentType
       };
 
-      const response = await fetch('http://localhost:8000/api/customer/validate-document', {
+      const response = await fetch(`${API_BASE_URL}/customer/validate-document`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -209,7 +212,7 @@ function App() {
               document_type: apiDocType
             };
 
-            const validationResponse = await fetch('http://localhost:8000/api/customer/validate-document', {
+            const validationResponse = await fetch(`${API_BASE_URL}/customer/validate-document`, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
@@ -241,7 +244,7 @@ function App() {
         validation_warnings: allValidationWarnings.length > 0 ? allValidationWarnings : null
       };
 
-      const response = await fetch('http://localhost:8000/api/customer/submit', {
+      const response = await fetch(`${API_BASE_URL}/customer/submit`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

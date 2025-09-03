@@ -1,0 +1,20 @@
+# Python dependencies
+boto3>=1.34.0
+python-dotenv>=1.0.0
+requests>=2.31.0
+pydantic>=2.5.0
+fastapi==0.104.1
+uvicorn==0.24.0
+python-multipart==0.0.6
+aiofiles>=23.2.0 
+sqlalchemy==2.0.23
+Werkzeug>=3.0.0
+pdf2image==1.16.3
+Pillow==10.1.0
+PyJWT==2.8.0
+
+# System dependencies (install separately):
+# - poppler: Required for PDF to image conversion
+#   macOS: brew install poppler
+#   Ubuntu/Debian: sudo apt-get install poppler-utils
+#   CentOS/RHEL: sudo yum install poppler-utils

@@ -3,6 +3,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from typing import Optional, List, Dict, Any
+from database import db_manager, Document as DBDocument, KYCCase
+from document_processor import document_processor
+from main import KYCProcessor
+from email_service import email_service
+from auth_service import auth_service, AuthService
 import json
 from datetime import datetime
 import uvicorn
@@ -12,42 +17,6 @@ import logging
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
-# Try to import dependencies with error handling
-try:
-    from database import db_manager, Document as DBDocument, KYCCase
-    logger.info("✅ Database module imported successfully")
-except ImportError as e:
-    logger.error(f"❌ Failed to import database module: {e}")
-    raise
-
-try:
-    from document_processor import document_processor
-    logger.info("✅ Document processor imported successfully")
-except ImportError as e:
-    logger.error(f"❌ Failed to import document processor: {e}")
-    raise
-
-try:
-    from main import KYCProcessor
-    logger.info("✅ KYC processor imported successfully")
-except ImportError as e:
-    logger.error(f"❌ Failed to import KYC processor: {e}")
-    raise
-
-try:
-    from email_service import email_service
-    logger.info("✅ Email service imported successfully")
-except ImportError as e:
-    logger.error(f"❌ Failed to import email service: {e}")
-    raise
-
-try:
-    from auth_service import auth_service, AuthService
-    logger.info("✅ Auth service imported successfully")
-except ImportError as e:
-    logger.error(f"❌ Failed to import auth service: {e}")
-    raise
 
 logger.info("🚀 Starting KYC API Server...")
 
@@ -247,12 +216,12 @@ class UserInfo(BaseModel):
 async def get_dashboard_data(current_user: Dict[str, Any] = Depends(get_current_user)):
     """Get dashboard data from database."""
     try:
-        print("🔍 Fetching dashboard data...")
+        logger.info("🔍 Fetching dashboard data...")
         dashboard_data = db_manager.get_dashboard_data()
-        print(f"✅ Dashboard data retrieved: {len(dashboard_data.get('cases', []))} cases")
+        logger.info(f"✅ Dashboard data retrieved: {len(dashboard_data.get('cases', []))} cases")
         return dashboard_data
     except Exception as e:
-        print(f"❌ Error in dashboard endpoint: {e}")
+        logger.error(f"❌ Error in dashboard endpoint: {e}")
         import traceback
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
@@ -303,7 +272,7 @@ async def get_case_details(customer_id: str, current_user: Dict[str, Any] = Depe
     except HTTPException:
         raise
     except Exception as e:
-        print(f"❌ Error in case details endpoint: {e}")
+        logger.error(f"❌ Error in case details endpoint: {e}")
         import traceback
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
@@ -351,7 +320,7 @@ async def manual_review(customer_id: str, review_request: ManualReviewRequest,
     except HTTPException:
         raise
     except Exception as e:
-        print(f"❌ Error in manual review: {e}")
+        logger.error(f"❌ Error in manual review: {e}")
         import traceback
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
@@ -384,7 +353,7 @@ async def retry_processing(customer_id: str, current_user: Dict[str, Any] = Depe
     except HTTPException:
         raise
     except Exception as e:
-        print(f"❌ Error in retry processing: {e}")
+        logger.error(f"❌ Error in retry processing: {e}")
         import traceback
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
@@ -431,7 +400,7 @@ async def upload_document(
     except HTTPException:
         raise
     except Exception as e:
-        print(f"❌ Error in document upload: {e}")
+        logger.error(f"❌ Error in document upload: {e}")
         import traceback
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
@@ -449,7 +418,7 @@ async def validate_document_data(validation_request: DocumentValidationRequest):
         return validation_result
         
     except Exception as e:
-        print(f"❌ Error in document validation: {e}")
+        logger.error(f"❌ Error in document validation: {e}")
         import traceback
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
@@ -476,10 +445,10 @@ async def submit_customer_kyc(submission: CustomerSubmissionRequest):
         if submission.validation_warnings:
             # Use validation warnings sent from frontend
             validation_warnings = submission.validation_warnings
-            print(f"Using validation warnings from frontend: {len(validation_warnings)} warnings")
+            logger.info(f"Using validation warnings from frontend: {len(validation_warnings)} warnings")
         else:
             # Fallback: validate documents against user-entered data
-            print("No validation warnings from frontend, performing validation...")
+            logger.info("No validation warnings from frontend, performing validation...")
             session = db_manager.get_session()
             try:
                 for document_type, document_id in submission.documents.items():
@@ -503,7 +472,7 @@ async def submit_customer_kyc(submission: CustomerSubmissionRequest):
                                     "warnings": validation_result["warnings"]
                                 })
                         except Exception as e:
-                            print(f"Error validating document {document_id}: {e}")
+                            logger.error(f"Error validating document {document_id}: {e}")
                             validation_warnings.append({
                                 "document_type": document_type,
                                 "document_id": document_id,
@@ -546,7 +515,7 @@ async def submit_customer_kyc(submission: CustomerSubmissionRequest):
                         result["final_status"] = "pending"
                         result["risk_level"] = "pending"
                         
-                        print(f"✅ Case {case.customer_id} set to pending due to validation warnings")
+                        logger.info(f"✅ Case {case.customer_id} set to pending due to validation warnings")
                 finally:
                     session.close()
             
@@ -566,7 +535,7 @@ async def submit_customer_kyc(submission: CustomerSubmissionRequest):
     except HTTPException:
         raise
     except Exception as e:
-        print(f"❌ Error in customer submission: {e}")
+        logger.error(f"❌ Error in customer submission: {e}")
         import traceback
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
@@ -592,7 +561,7 @@ async def get_customer_status(customer_id: str):
     except HTTPException:
         raise
     except Exception as e:
-        print(f"❌ Error getting customer status: {e}")
+        logger.error(f"❌ Error getting customer status: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/api/health")
@@ -612,6 +581,7 @@ async def health_check():
             }
         }
     except Exception as e:
+        logger.error(f"❌ Error in health check endpoint: {e}")
         return {
             "status": "unhealthy",
             "timestamp": datetime.now().isoformat(),
@@ -632,6 +602,7 @@ async def initialize_database():
             "database_info": db_info
         }
     except Exception as e:
+        logger.error(f"❌ Error in database initialization: {e}")
         raise HTTPException(status_code=500, detail=f"Database initialization failed: {str(e)}")
 
 @app.get("/api/database/info")
@@ -641,16 +612,17 @@ async def get_database_info():
         db_info = db_manager.get_database_info()
         return db_info
     except Exception as e:
+        logger.error(f"❌ Error getting database info: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to get database info: {str(e)}")
 
 @app.get("/")
-async def root():
-    """Root endpoint with API information."""
+async def health_check():
+    """Health check endpoint for App Runner."""
     return {
-        "message": "KYC Admin Dashboard API",
+        "status": "healthy",
+        "service": "KYC API Server",
         "version": "1.0.0",
-        "docs": "/docs",
-        "health": "/api/health"
+        "timestamp": datetime.utcnow().isoformat()
     }
 
 @app.get("/api/documents/{document_id}/file")
@@ -686,7 +658,7 @@ async def get_document_file(document_id: str):
             if possible_files:
                 # Use the first found file
                 document.file_path = possible_files[0]
-                print(f"Found file for document {document_id}: {document.file_path}")
+                logger.info(f"Found file for document {document_id}: {document.file_path}")
             else:
                 raise HTTPException(status_code=404, detail="Document file not found")
         
@@ -710,7 +682,7 @@ async def get_document_file(document_id: str):
     except HTTPException:
         raise
     except Exception as e:
-        print(f"❌ Error in document file retrieval: {e}")
+        logger.error(f"❌ Error in document file retrieval: {e}")
         import traceback
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
@@ -778,7 +750,7 @@ async def archive_case(customer_id: str, archive_request: CaseArchiveRequest,
     except HTTPException:
         raise
     except Exception as e:
-        print(f"❌ Error in case archiving: {e}")
+        logger.error(f"❌ Error in case archiving: {e}")
         import traceback
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
@@ -855,7 +827,7 @@ async def update_case(customer_id: str, update_request: CaseUpdateRequest,
     except HTTPException:
         raise
     except Exception as e:
-        print(f"❌ Error in case update: {e}")
+        logger.error(f"❌ Error in case update: {e}")
         import traceback
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
@@ -949,7 +921,7 @@ async def send_email_to_customer(customer_id: str, email_request: EmailRequest,
     except HTTPException:
         raise
     except Exception as e:
-        print(f"❌ Error in email sending: {e}")
+        logger.error(f"❌ Error in email sending: {e}")
         import traceback
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
@@ -981,7 +953,7 @@ async def get_case_audit_logs(customer_id: str):
     except HTTPException:
         raise
     except Exception as e:
-        print(f"❌ Error in audit logs retrieval: {e}")
+        logger.error(f"❌ Error in audit logs retrieval: {e}")
         import traceback
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
@@ -993,7 +965,7 @@ async def login(login_request: LoginRequest):
         result = auth_service.login(login_request.username, login_request.password)
         return LoginResponse(**result)
     except Exception as e:
-        print(f"❌ Error in login: {e}")
+        logger.error(f"❌ Error in login: {e}")
         raise HTTPException(status_code=500, detail="Login failed")
 
 @app.post("/api/auth/logout")
@@ -1008,7 +980,7 @@ async def logout(current_user: Dict[str, Any] = Depends(get_current_user),
             "message": "Logout successful"
         }
     except Exception as e:
-        print(f"❌ Error in logout: {e}")
+        logger.error(f"❌ Error in logout: {e}")
         raise HTTPException(status_code=500, detail="Logout failed")
 
 @app.get("/api/auth/me", response_model=UserInfo)
@@ -1026,7 +998,7 @@ async def list_users(current_user: Dict[str, Any] = Depends(get_admin_user)):
             "users": users
         }
     except Exception as e:
-        print(f"❌ Error listing users: {e}")
+        logger.error(f"❌ Error listing users: {e}")
         raise HTTPException(status_code=500, detail="Failed to list users")
 
 @app.post("/api/documents/{document_id}/validate")
@@ -1066,7 +1038,7 @@ async def validate_document(document_id: str, validation_request: AdminDocumentV
     except HTTPException:
         raise
     except Exception as e:
-        print(f"❌ Error in document validation: {e}")
+        logger.error(f"❌ Error in document validation: {e}")
         import traceback
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))

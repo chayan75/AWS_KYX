@@ -1,0 +1,15 @@
+version: 1.0
+runtime: nodejs18
+build:
+  commands:
+    build:
+      - cd admin-dashboard
+      - npm install
+      - npm run build
+      - npm install -g serve
+run:
+  runtime-version: 18
+  command: cd admin-dashboard && serve -s build -l 3000
+  network:
+    port: 3000
+    env: PORT

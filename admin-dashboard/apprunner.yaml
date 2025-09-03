@@ -3,7 +3,6 @@ runtime: nodejs18
 build:
   commands:
     build:
-      - cd admin-dashboard
       - npm install
       - npm run build
       - npm install -g serve

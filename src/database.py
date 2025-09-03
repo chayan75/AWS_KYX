@@ -16,6 +16,14 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 # Create base class for models
 Base = declarative_base()
 
+# Create all tables if they don't exist
+try:
+    Base.metadata.create_all(bind=engine)
+    print("✅ Database tables created/verified successfully")
+except Exception as e:
+    print(f"⚠️ Warning: Could not create database tables: {e}")
+    print("Database operations may fail until tables are created")
+
 class KYCCase(Base):
     """Model for storing KYC case information."""
     __tablename__ = "kyc_cases"

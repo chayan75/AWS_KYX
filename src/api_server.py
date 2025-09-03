@@ -3,15 +3,53 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from typing import Optional, List, Dict, Any
-from database import db_manager, Document as DBDocument, KYCCase
-from document_processor import document_processor
-from main import KYCProcessor
-from email_service import email_service
-from auth_service import auth_service, AuthService
 import json
 from datetime import datetime
 import uvicorn
 import os
+import logging
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# Try to import dependencies with error handling
+try:
+    from database import db_manager, Document as DBDocument, KYCCase
+    logger.info("✅ Database module imported successfully")
+except ImportError as e:
+    logger.error(f"❌ Failed to import database module: {e}")
+    raise
+
+try:
+    from document_processor import document_processor
+    logger.info("✅ Document processor imported successfully")
+except ImportError as e:
+    logger.error(f"❌ Failed to import document processor: {e}")
+    raise
+
+try:
+    from main import KYCProcessor
+    logger.info("✅ KYC processor imported successfully")
+except ImportError as e:
+    logger.error(f"❌ Failed to import KYC processor: {e}")
+    raise
+
+try:
+    from email_service import email_service
+    logger.info("✅ Email service imported successfully")
+except ImportError as e:
+    logger.error(f"❌ Failed to import email service: {e}")
+    raise
+
+try:
+    from auth_service import auth_service, AuthService
+    logger.info("✅ Auth service imported successfully")
+except ImportError as e:
+    logger.error(f"❌ Failed to import auth service: {e}")
+    raise
+
+logger.info("🚀 Starting KYC API Server...")
 
 app = FastAPI(
     title="KYC Admin Dashboard API",

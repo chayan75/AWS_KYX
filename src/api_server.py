@@ -33,7 +33,9 @@ app.add_middleware(
         "http://localhost:3000", 
         "http://127.0.0.1:3000",
         "http://localhost:3001", 
-        "http://127.0.0.1:3001"
+        "http://127.0.0.1:3001",
+        "https://umprkmfp7m.us-east-1.awsapprunner.com/",
+        "https://wcnhcjkmt8.us-east-1.awsapprunner.com/"
     ],
     allow_credentials=True,
     allow_methods=["*"],

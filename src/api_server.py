@@ -34,13 +34,24 @@ app.add_middleware(
         "http://127.0.0.1:3000",
         "http://localhost:3001", 
         "http://127.0.0.1:3001",
-        "https://umprkmfp7m.us-east-1.awsapprunner.com/",
-        "https://wcnhcjkmt8.us-east-1.awsapprunner.com/"
+        "https://umprkmfp7m.us-east-1.awsapprunner.com",
+        "https://wcnhcjkmt8.us-east-1.awsapprunner.com"
     ],
-    allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allow_headers=["*"],
+allow_credentials=True,
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD", "PATCH"],
+    allow_headers=[
+        "Accept",
+        "Accept-Language",
+        "Content-Language",
+        "Content-Type",
+        "Authorization",
+        "X-Requested-With",
+        "Origin",
+        "Access-Control-Request-Method",
+        "Access-Control-Request-Headers",
+    ],
     expose_headers=["*"],
+    max_age=600,  # Cache preflight response for 10 minutes
 )
 
 # Global auth service instance

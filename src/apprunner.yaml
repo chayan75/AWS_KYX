@@ -4,8 +4,9 @@ build:
   commands:
     build:
       - pip3 install --upgrade pip
-      - apt-get update
-      - apt-get install -y poppler-utils
+      # Use yum instead of apt-get for Amazon Linux
+      - yum update -y
+      - yum install -y poppler-utils
       - pip3 install -r requirements.txt
       - pip3 list  # Debug: show what's installed
 run:

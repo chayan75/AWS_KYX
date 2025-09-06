@@ -4,6 +4,8 @@ build:
   commands:
     build:
       - pip3 install --upgrade pip
+      - apt-get update
+      - apt-get install -y poppler-utils
       - pip3 install -r requirements.txt
       - pip3 list  # Debug: show what's installed
 run:
@@ -16,3 +18,43 @@ run:
   network:
     port: 8000
     env: PORT
+  env:
+    - name: AWS_REGION
+      value: us-east-1
+    # AWS Configuration - Using IAM Role (no credentials needed)
+    - name: AWS_DEFAULT_REGION
+      value: us-east-1
+    # Bedrock Agent IDs
+    - name: KYC_COORDINATOR_AGENT_ID
+      value: KRD7E8KLSR
+    - name: DOCUMENT_VALIDATION_AGENT_ID
+      value: CXZU2UKNCB
+    - name: RISK_ANALYSIS_AGENT_ID
+      value: THNXWIM11W
+    - name: COMPLIANCE_AGENT_ID
+      value: 8EH1MERDDS
+    - name: CUSTOMER_INTERACTION_AGENT_ID
+      value: JTRGGAQGFM
+    - name: REAL_TIME_FEEDBACK_AGENT_ID
+      value: PLMNBYYDHF
+    - name: WORKFLOW_AUTOMATION_AGENT_ID
+      value: NFGUASKPI8
+    - name: TASK_PRIORITIZATION_AGENT_ID
+      value: JT7FOEI1VG
+    - name: SANCTION_SCREENING_AGENT_ID
+      value: O355UUHSLX
+    - name: DATA_STORAGE_AUDIT_AGENT_ID
+      value: QJ8W4BJPZO
+    - name: FEEDBACK_LOOP_LEARNING_AGENT_ID
+      value: XXF6VDDMZ0
+    # Email Configuration
+    - name: SMTP_SERVER
+      value: smtp.gmail.com
+    - name: SMTP_PORT
+      value: "587"
+    - name: SENDER_EMAIL
+      value: kyc-admin@yourcompany.com
+    - name: SENDER_PASSWORD
+      value: your_app_password
+    - name: COMPANY_NAME
+      value: Your Company

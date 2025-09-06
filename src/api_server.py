@@ -38,8 +38,9 @@ app.add_middleware(
         "https://wcnhcjkmt8.us-east-1.awsapprunner.com/"
     ],
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
+    expose_headers=["*"],
 )
 
 # Global auth service instance

@@ -13,6 +13,8 @@ run:
   runtime-version: 3.11
   pre-run:
     - pip3 install --upgrade pip
+    - yum update -y
+    - yum install -y poppler-utils
     - pip3 install -r requirements.txt
     - pip3 list  # Debug: show what's available at runtime
   command: uvicorn api_server:app --host 0.0.0.0 --port 8000
